@@ -5,6 +5,7 @@ public class MyPriorityQueue<E extends Comparable<E>> {
         heap.add(object);
     }
     public E dequeue(){ return heap.removeRoot(); }
+    public E top(){ return heap.top(); }
     public int size(){ return heap.getSize();}
     public boolean isEmpty(){ return heap.isEmpty(); }
 }
