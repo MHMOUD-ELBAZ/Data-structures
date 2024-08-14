@@ -33,6 +33,7 @@ public class MaxHeap<E extends Comparable<E>>{
 
         return  removed;
     }
+    public E top(){ return (!list.isEmpty() ? list.getFirst() : null) ; }
     public int getSize(){
         return list.size();
     }
