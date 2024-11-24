@@ -21,13 +21,14 @@ public class MyHashMap<K,V> {
             return "key = " + key + " value = " + value;
         }
     }
-    private Entry<K,V>[] data  ;
+    private Entry<K,V>[] data ;
+    private final Entry<K,V> DELETED = new Entry<>(null,null);
 
     public MyHashMap(){ this(4,0.75); }
     public MyHashMap(int capacity, double loadFactorThreshold){
         N = 1;
-        while(N < capacity) N <<= 2;
-        this.loadFactorThreshold =loadFactorThreshold;
+        while(N < capacity) N <<= 1;
+        this.loadFactorThreshold = loadFactorThreshold;
         data = new Entry[N];
     }
 
@@ -44,16 +45,17 @@ public class MyHashMap<K,V> {
         for(int j =0 ;j<N;j++){
             index = (i + j*secondaryHash) % N;
 
-            if(data[index] == null) {
+            if(data[index] == null || data[index] == DELETED) {
                 data[index] = newEntry;
                 size++;
                 loadFactor = (double) size / N;
-                break ;
+                return;
             }
-            else if(data[index].key.equals(key))
+            else if(data[index].key.equals(key)) {
                 data[index].value = value;
+                return;
+            }
         }
-
     }
     public boolean contains(K key){
         return get(key) != null;
@@ -65,7 +67,7 @@ public class MyHashMap<K,V> {
             index = (i + j*secondary) %N ;
             if(data[index] == null )
                 return null;
-            else if (data[index].key.equals(key) )
+            else if (data[index] != DELETED && data[index].key.equals(key))
                 return data[index].value;
         }
 
@@ -78,8 +80,10 @@ public class MyHashMap<K,V> {
             index = (i + j*secondary) %N ;
             if(data[index] == null )
                 return false;
-            else if (data[index].key.equals(key) ) {
-                data[index] = null;
+            else if (data[index] != DELETED && data[index].key.equals(key) ) {
+                data[index] = DELETED;
+                size--;
+                loadFactor = (double) size / N;
                 return true;
             }
         }
@@ -116,7 +120,7 @@ public class MyHashMap<K,V> {
         size = 0;
         loadFactor = 0;
         for (Entry<K,V>entry : dataCopy) {
-            if(entry != null)
+            if(entry != null && entry != DELETED)
                 put(entry.key, entry.value);
         }
 
